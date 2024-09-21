@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBP Exchange Rates</title>
+    <style>
+        table {
+            width: 50%;
+            margin: auto;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align:center;">Exchange Rates for {{ data.currency }} ({{ data.code }})</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Effective Date</th>
+                <th>Mid Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rate in data.rates %}
+            <tr>
+                <td>{{ rate.no }}</td>
+                <td>{{ rate.effectiveDate }}</td>
+                <td>{{ rate.mid }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h1 style="text-align:center;">Waluty {{ curr.table }}</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Currency</th>
+                <th>Code</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for waluta in curr.rates %}
+            <tr>
+                <td>{{ waluta.currency }}</td>
+                <td>{{ waluta.code }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
