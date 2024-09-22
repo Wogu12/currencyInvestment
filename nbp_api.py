@@ -2,6 +2,7 @@ import requests
 import logging
 from datetime import datetime, timedelta
 
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class NbpApi:
@@ -46,6 +47,19 @@ class NbpApi:
         if end_date_obj > yesterday:
             logging.error(f'End date {end_date} is in the future')
             raise ValueError(f'End date {end_date} is in the future')
+        
+    def adjust_start_date(self, start_date):
+        """
+        Adjust start date if it falls on a weekend
+        """
+        start_date_obj = datetime.strptime(start_date, '%Y-%m-%d').date()
+
+        if start_date_obj.weekday() == 5:
+            start_date_obj -= timedelta(days=1)
+        elif start_date_obj.weekday() == 6:
+            start_date_obj -= timedelta(days=2)
+
+        return start_date_obj.strftime('%Y-%m-%d')
 
     def get_currency_list(self):
         """
@@ -60,9 +74,12 @@ class NbpApi:
         Get list of certain currency rates from start_date to end_date
         """
         self._validate_dates(start_date, end_date)
+        valid_start_date = self.adjust_start_date(start_date)
         
-        full_url = f'{self.base_url}rates/A/{curr_code}/{start_date}/{end_date}/?format=json'
-        return self._make_request(full_url, self.clean_currency_rates)
+        full_url = f'{self.base_url}rates/A/{curr_code}/{valid_start_date}/{end_date}/?format=json'
+        api_response = self._make_request(full_url, self.clean_currency_rates)
+        refactored_response = self.fill_missing_dates(api_response, start_date, end_date)
+        return refactored_response
 
     def clean_currency_list(self, api_response):
         """
@@ -84,3 +101,48 @@ class NbpApi:
                     del rate["no"]
             return rates
         return []
+
+    def fill_missing_dates(self, data, start_date, end_date):
+        """
+        NBP API does not provide data on weekends.
+        Rates on weekends will be replaced with friday rates.
+        """
+
+        data_dict = {entry['effectiveDate']: entry['mid'] for entry in data}
+        
+        complete_data = []
+        
+        start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+        end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+        
+        last_mid = None  
+
+        current_date = start_date
+        while current_date <= end_date:
+            date_str = current_date.strftime('%Y-%m-%d')
+            
+            if date_str in data_dict:
+                last_mid = data_dict[date_str]
+                complete_data.append({'effectiveDate': date_str, 'mid': last_mid})
+            else:
+                if current_date.weekday() < 5: 
+                    if last_mid is not None:
+                        complete_data.append({'effectiveDate': date_str, 'mid': last_mid})
+                else:
+                    backtrack_date = current_date
+                    while backtrack_date.weekday() >= 5:
+                        backtrack_date -= timedelta(days=1)
+                    
+                    backtrack_date_str = backtrack_date.strftime('%Y-%m-%d')
+                    if backtrack_date_str in data_dict:
+                        last_mid = data_dict[backtrack_date_str]
+                        complete_data.append({'effectiveDate': date_str, 'mid': last_mid})
+
+            current_date += timedelta(days=1)
+
+        complete_data = [
+            entry for entry in complete_data 
+            if start_date <= datetime.strptime(entry['effectiveDate'], '%Y-%m-%d').date() <= end_date
+        ]
+
+        return complete_data
