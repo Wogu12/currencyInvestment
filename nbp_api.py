@@ -32,7 +32,7 @@ class NbpApi:
 
     def _validate_dates(self, start_date, end_date):
         """
-        Validate date format and if date exist
+        Validate date format and if is in right format and if end_date is not in the future
         """ 
         for date in (start_date, end_date):
             try:
@@ -54,7 +54,7 @@ class NbpApi:
         """
         start_date_obj = datetime.strptime(start_date, '%Y-%m-%d').date()
 
-        if start_date_obj.weekday() == 5:
+        if start_date_obj.weekday() == 5: # 5 -> saturday
             start_date_obj -= timedelta(days=1)
         elif start_date_obj.weekday() == 6:
             start_date_obj -= timedelta(days=2)
@@ -104,8 +104,8 @@ class NbpApi:
 
     def fill_missing_dates(self, data, start_date, end_date):
         """
-        NBP API does not provide data on weekends.
-        Rates on weekends will be replaced with friday rates.
+        NBP API does not provide data on weekends and holidays.
+        Rates on missing days will be replaced with previous day rates or friday rates if the missing day is weekend.
         """
 
         data_dict = {entry['effectiveDate']: entry['mid'] for entry in data}
@@ -115,7 +115,7 @@ class NbpApi:
         start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
         end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
         
-        last_mid = None  
+        last_mid = None #empty placeholder
 
         current_date = start_date
         while current_date <= end_date:
@@ -138,7 +138,7 @@ class NbpApi:
                         last_mid = data_dict[backtrack_date_str]
                         complete_data.append({'effectiveDate': date_str, 'mid': last_mid})
 
-            current_date += timedelta(days=1)
+            current_date += timedelta(days=1) #to start next day
 
         complete_data = [
             entry for entry in complete_data 

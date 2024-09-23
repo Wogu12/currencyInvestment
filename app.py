@@ -1,38 +1,42 @@
 from flask import Flask, render_template, request
 import requests
+from nbp_api import NbpApi
+from investment import Investment
 
 app = Flask(__name__)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
-def get_values():
-    api_url = 'https://api.nbp.pl/api/exchangerates/rates/A/USD/2024-08-01/2024-08-31/?format=json'
-    response = requests.get(api_url)
-    
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print(f"Error fetching data from API: {response.status_code}")
-        return None
-    
-def get_table():
-    api_url = 'https://api.nbp.pl/api/exchangerates/tables/A/?format=json'
-    response = requests.get(api_url)
-    
-    if response.status_code == 200:
-        data = response.json()
-        if data:
-            return data[0]
-    else:
-        print(f"Error fetching data from API: {response.status_code}")
-        return None
+nbp_api = NbpApi()
 
 @app.route('/')
 def index():
-    data = get_values()
-    curr = get_table()
-    if data:
-        return render_template('index.html', data=data, curr=curr)
-    else:
-        return "Error fetching data", 500
+
+    currency_list = nbp_api.get_currency_list()
+    
+    return render_template('index.html', currency_list = currency_list)
+
+@app.route('/analyze', methods=['POST'])
+def analyze():
+    curr_first = request.form.get('curr_first')
+    percentage_first = request.form.get('percentage_first')
+    
+    curr_second = request.form.get('curr_second')
+    percentage_second = request.form.get('percentage_second')
+    
+    curr_third = request.form.get('curr_third')
+    percentage_third = request.form.get('percentage_third')
+
+    start_date = request.form.get('start_date')
+
+    currency_dict = {
+        'first': {'currency': curr_first, 'percentage': percentage_first},
+        'second': {'currency': curr_second, 'percentage': percentage_second},
+        'third': {'currency': curr_third, 'percentage': percentage_third},
+    }
+
+    investment = Investment(currency_dict, start_date, nbp_api)
+    
+    return('hello world!')
 
 if __name__ == '__main__':
     app.run(debug=True)

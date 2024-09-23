@@ -1,60 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NBP Exchange Rates</title>
-    <style>
-        table {
-            width: 50%;
-            margin: auto;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 8px 12px;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <h1 style="text-align:center;">Exchange Rates for {{ data.currency }} ({{ data.code }})</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Effective Date</th>
-                <th>Mid Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for rate in data.rates %}
-            <tr>
-                <td>{{ rate.no }}</td>
-                <td>{{ rate.effectiveDate }}</td>
-                <td>{{ rate.mid }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <h1 style="text-align:center;">Waluty {{ curr.table }}</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Currency</th>
-                <th>Code</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for waluta in curr.rates %}
-            <tr>
-                <td>{{ waluta.currency }}</td>
-                <td>{{ waluta.code }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='node_modules/materialize-css/dist/css/materialize.min.css') }}" media="screen,projection"/>
+        <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+        <title>Zadanie rekrutacyjne ING</title>
+    </head>
+    <body>
+        <div class="row center">
+            <h2>Analiza inwestycji 1000zł w trzy waluty na 30 dni</h2>
+        </div>
+        <form action="/analyze" method="POST" onsubmit="return validateForm()">
+            <div class="row">
+                <div class="input-field col s4 offset-s3">
+                    <select name="curr_first">
+                        <option value="" disabled selected>Wybierz...</option>
+                        {% for curr in currency_list %}
+                            <option value="{{curr.code}}">{{curr.currency}} ({{curr.code}})</option>
+                        {% endfor %}
+                    </select>
+                    <label>Pierwsza waluta</label>
+                </div>
+                <div class="input-field col s2">
+                    <input id="first-amount" type="number" name="percentage_first" class="validate" max="98" step="1" min="1">
+                    <label for="first-amount">Procentowa wartość inwestycji</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s4 offset-s3">
+                    <select name="curr_second">
+                        <option value="" disabled selected>Wybierz...</option>
+                        {% for curr in currency_list %}
+                            <option value="{{curr.code}}">{{curr.currency}} ({{curr.code}})</option>
+                        {% endfor %}
+                    </select>
+                    <label>Druga waluta</label>
+                </div>
+                <div class="input-field col s2">
+                    <input id="second-amount" type="number" name="percentage_second" class="validate" max="98" step="1" min="1">
+                    <label for="second-amount">Procentowa wartość inwestycji</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s4 offset-s3">
+                    <select name="curr_third">
+                        <option value="" disabled selected>Wybierz...</option>
+                        {% for curr in currency_list %}
+                            <option value="{{curr.code}}">{{curr.currency}} ({{curr.code}})</option>
+                        {% endfor %}
+                    </select>
+                    <label>Trzecia waluta</label>
+                </div>
+                <div class="input-field col s2">
+                    <input id="third-amount" type="number" name="percentage_third" class="validate" max="98" step="1" min="1">
+                    <label for="third-amount">Procentowa wartość inwestycji</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s6 offset-s3">
+                    <input id="start_date" type="text" name="start_date" class="datepicker" autocomplete="off">
+                    <label for="start_date">Data rozpoczęcia inwestycji</label>
+                    <span class="grey-text">System automatycznie obliczy datę końca inwestycji (30 dni)</span>
+                </div>
+            </div>
+            <div class="row">
+                <button class="btn col s6 offset-s3">Analizuj</button>
+            </div>
+        </form>
+
+        <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='node_modules/materialize-css/dist/js/materialize.min.js') }}"></script>
+    </body>
 </html>
