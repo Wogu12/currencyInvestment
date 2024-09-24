@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='node_modules/materialize-css/dist/css/materialize.min.css') }}" media="screen,projection"/>
+        <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+        <title>Zadanie rekrutacyjne ING</title>
+    </head>
+    <body>
+        <div class="row center"></div>
+            <h2>Analiza inwestycji 1000zł w trzy waluty na 30 dni</h2>
+            <h5>wypłacona kwota w PLN po 30 dniach: {{ last_total }}</h5>
+        </div>
+        <div class="row">
+            <img style="width: 50%;" src="{{ url_for('static', filename='graphs/currency_rates.png')}}" alt="">
+        </div>
+        <div class="row">
+            <img style="width: 50%;" src="{{ url_for('static', filename='graphs/investment_in_pln.png')}}" alt="">
+        </div>
+        
+
+        <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='node_modules/materialize-css/dist/js/materialize.min.js') }}"></script>
+    </body>
+</html>
