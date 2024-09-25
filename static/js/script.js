@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-    let elems = document.querySelectorAll('select');
-    M.FormSelect.init(elems);
+    let selectElems = document.querySelectorAll('select');
+    let selectInstances = M.FormSelect.init(selectElems);
     
 
     let currYear = new Date().getFullYear();
@@ -14,6 +14,12 @@ document.addEventListener('DOMContentLoaded', function() {
         maxDate: new Date(currYear, currMonth-1, currDay),
         yearRange: [2020, currYear]
     });
+
+    let imageElems = document.querySelectorAll('.materialboxed');
+    let imageInstances = M.Materialbox.init(imageElems);
+
+    let collapibleElems = document.querySelectorAll('.collapsible');
+    let collapsibleInstances = M.Collapsible.init(collapibleElems);
 });
 
 function validateForm() {

@@ -1,6 +1,4 @@
 from flask import Flask, render_template, request
-import requests
-import math
 from nbp_api import NbpApi
 from investment import Investment
 
@@ -38,10 +36,34 @@ def analyze():
     investment = Investment(currency_dict, start_date, nbp_api)
 
     investment.draw_currency_rates()
-    last_total = round(investment.draw_investment_pln(), 2)
-    investment.draw_investment_in_currencies()
+
+    last_total = investment.draw_investment_pln()
+    bilance = last_total - 1000.0
+    bilance = round(bilance, 2)
+
+    start_values = {curr_first: percentage_first, curr_second: percentage_second, curr_third: percentage_third}
+    investment.draw_start_pie(start_values)
+
+    investment.draw_end_pie()
+    highest_value, best_date = investment.when_to_leave()
+
+    best_bilance = round((highest_value - 1000), 2)
+
+    investment.plot_currency_allocation_over_time()
     
-    return render_template('investmentResult.html', last_total = last_total)
+    
+    return render_template('investmentResult.html', 
+                           last_total = last_total, 
+                           bilance = bilance, 
+                           highest_value = highest_value, 
+                           best_date = best_date, 
+                           best_bilance = best_bilance, 
+                           curr_first = curr_first, 
+                           curr_second = curr_second, 
+                           curr_third = curr_third,
+                           percentage_first = percentage_first,
+                           percentage_second = percentage_second,
+                           percentage_third = percentage_third)
 
 if __name__ == '__main__':
     app.run(debug=True)

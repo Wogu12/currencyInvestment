@@ -6,12 +6,17 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='node_modules/materialize-css/dist/css/materialize.min.css') }}" media="screen,projection"/>
         <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
-        <title>Zadanie rekrutacyjne ING</title>
+        <title>inewstycja</title>
     </head>
     <body>
-        <div class="row center">
-            <h2>Analiza inwestycji 1000zł w trzy waluty na 30 dni</h2>
+        <div class="navbar-fixed">
+            <nav>
+                <div class="nav-wrapper">
+                    <a href="/" class="brand-logo center">Analiza inwestycji 1000zł w trzy waluty na 30 dni</a>
+                </div>
+            </nav>
         </div>
+        <div class="row"></div>
         <form action="/analyze" method="POST" onsubmit="return validateForm()">
             <div class="row">
                 <div class="input-field col s4 offset-s3">
@@ -62,6 +67,7 @@
                 <div class="input-field col s6 offset-s3">
                     <input id="start_date" type="text" name="start_date" class="datepicker" autocomplete="off">
                     <label for="start_date">Data rozpoczęcia inwestycji</label>
+                    <span class="grey-text">Maksymalna data do wybory - miesiąc wstecz, aby wyświetlić poprawne dane</span><br>
                     <span class="grey-text">System automatycznie obliczy datę końca inwestycji (30 dni)</span>
                 </div>
             </div>

@@ -17,7 +17,7 @@ class NbpApi:
         Make API request and clean the response
         """
         try:
-            response = requests.get(url)
+            response = requests.get(url, timeout=60)
             response.raise_for_status()
             return clean_func(response.json())
         except requests.exceptions.RequestException as e:

@@ -6,19 +6,59 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='node_modules/materialize-css/dist/css/materialize.min.css') }}" media="screen,projection"/>
         <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
-        <title>Zadanie rekrutacyjne ING</title>
+        <title>inwestycja</title>
     </head>
     <body>
-        <div class="row center"></div>
-            <h2>Analiza inwestycji 1000zł w trzy waluty na 30 dni</h2>
-            <h5>wypłacona kwota w PLN po 30 dniach: {{ last_total }}</h5>
+        <div class="navbar-fixed">
+            <nav>
+                <div class="nav-wrapper">
+                    <a href="/" class="brand-logo center">Analiza inwestycji 1000zł w trzy waluty na 30 dni</a>
+                </div>
+            </nav>
         </div>
-        <div class="row">
-            <img style="width: 50%;" src="{{ url_for('static', filename='graphs/currency_rates.png')}}" alt="">
+        <div class="row center">
+            <div class="col s6 offset-s3">
+
+                <h6>1000 PLN zainwestowane w {{curr_first}} ({{percentage_first}}%), {{curr_second}} ({{percentage_second}}%), {{curr_third}} ({{percentage_third}}%) wypłacone po 30 dniach dało: {{ last_total }} PLN.
+                    <br>Bilans zysków/strat: {{ bilance }} PLN.</h6>
+                <h6>Powinieneś zakończyć inwestycję w dniu {{ best_date }}. Twój portfel byłby warty wtedy {{ highest_value }} PLN. 
+                    <br>Bilans zysków/strat byłby równy: {{ best_bilance }} PLN.</h6>
+            </div> 
         </div>
-        <div class="row">
-            <img style="width: 50%;" src="{{ url_for('static', filename='graphs/investment_in_pln.png')}}" alt="">
-        </div>
+        <h6 style="margin-left: 2%;">Wykresy:</h6>
+        <ul class="collapsible popout">
+            <li>
+                <div class="collapsible-header"><i class="material-icons">show_chart</i>Przebieg inwestycji w PLN w ciągu inwestycji (30 dni)</div>
+                <div class="collapsible-body center-align">
+                    <img style="width: 60%;" src="{{ url_for('static', filename='graphs/investment_in_pln.png')}}" alt="">                    
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header"><i class="material-icons">show_chart</i>Cena za wybrane waluty w ciągu inwestycji (30 dni)</div>
+                <div class="collapsible-body center-align">
+                    <img style="width: 60%;" src="{{ url_for('static', filename='graphs/currency_rates.png')}}" alt="">
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header"><i class="material-icons">show_chart</i>Procentowy udział walut w ciągu inwestycji (30 dni)</div>
+                <div class="collapsible-body center-align">
+                    <img style="width: 60%;" src="{{ url_for('static', filename='graphs/percentage_allocation_chart.png')}}" alt="">
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header"><i class="material-icons">pie_chart</i>Procentowy podział walut na początku inwestycji</div>
+                <div class="collapsible-body center-align">
+                    <img style="width: 60%;" src="{{ url_for('static', filename='graphs/pie_chart_start.png')}}" alt="">
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header"><i class="material-icons">pie_chart</i>Procentowy podział walut na koniec inwestycji</div>
+                <div class="collapsible-body center-align">
+                    <img style="width: 60%;" src="{{ url_for('static', filename='graphs/pie_chart_end.png')}}" alt="">
+                </div>
+            </li>
+        </ul>
+        
         
 
         <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
