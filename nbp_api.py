@@ -35,6 +35,7 @@ class NbpApi:
         Validate date format and if is in right format and if end_date is not in the future
         """ 
         for date in (start_date, end_date):
+            #check format
             try:
                 datetime.strptime(date, '%Y-%m-%d')
             except ValueError:
@@ -43,7 +44,8 @@ class NbpApi:
         
         end_date_obj = datetime.strptime(end_date, '%Y-%m-%d')
         yesterday = datetime.today() - timedelta(days=1)
-
+        
+        #check if end_date is not in the future
         if end_date_obj > yesterday:
             logging.error(f'End date {end_date} is in the future')
             raise ValueError(f'End date {end_date} is in the future')
@@ -55,8 +57,8 @@ class NbpApi:
         start_date_obj = datetime.strptime(start_date, '%Y-%m-%d').date()
 
         if start_date_obj.weekday() == 5: # 5 -> saturday
-            start_date_obj -= timedelta(days=1)
-        elif start_date_obj.weekday() == 6:
+            start_date_obj -= timedelta(days=1) #take friday date
+        elif start_date_obj.weekday() == 6: #if sunday -> take friday date
             start_date_obj -= timedelta(days=2)
 
         return start_date_obj.strftime('%Y-%m-%d')
@@ -65,20 +67,20 @@ class NbpApi:
         """
         Get list of currencies and their codes
         """
-        full_url = f'{self.base_url}tables/A/?format=json'
-        return self._make_request(full_url, self.clean_currency_list)
+        full_url = f'{self.base_url}tables/A/?format=json'  
+        return self._make_request(full_url, self.clean_currency_list) #get currencies and their codes from API
         
         
     def get_currency_rates(self, curr_code, start_date, end_date):
         """
         Get list of certain currency rates from start_date to end_date
         """
-        self._validate_dates(start_date, end_date)
-        valid_start_date = self.adjust_start_date(start_date)
+        self._validate_dates(start_date, end_date) #validate dates
+        valid_start_date = self.adjust_start_date(start_date) #check if start_date is not on the weekend
         
         full_url = f'{self.base_url}rates/A/{curr_code}/{valid_start_date}/{end_date}/?format=json'
-        api_response = self._make_request(full_url, self.clean_currency_rates)
-        refactored_response = self.fill_missing_dates(api_response, start_date, end_date)
+        api_response = self._make_request(full_url, self.clean_currency_rates) #get rates for specific currency
+        refactored_response = self.fill_missing_dates(api_response, start_date, end_date) #fill missing dates with 
         return refactored_response
 
     def clean_currency_list(self, api_response):
@@ -87,7 +89,7 @@ class NbpApi:
         """
         if api_response:
             rates = api_response[0].get('rates', [])
-            return [{'currency': rate['currency'], 'code': rate['code']} for rate in rates]
+            return [{'currency': rate['currency'], 'code': rate['code']} for rate in rates] #new dict with only needed keys and codes
         return []
     
     def clean_currency_rates(self, api_response):
@@ -98,7 +100,7 @@ class NbpApi:
             rates = api_response.get('rates', [])
             for rate in rates:
                 if "no" in rate:
-                    del rate["no"]
+                    del rate["no"] 
             return rates
         return []
 
@@ -141,8 +143,9 @@ class NbpApi:
             current_date += timedelta(days=1) #to start next day
 
         complete_data = [
+            #leaves only dates from between start_date and end_date
             entry for entry in complete_data 
-            if start_date <= datetime.strptime(entry['effectiveDate'], '%Y-%m-%d').date() <= end_date
+                if start_date <= datetime.strptime(entry['effectiveDate'], '%Y-%m-%d').date() <= end_date
         ]
 
         return complete_data

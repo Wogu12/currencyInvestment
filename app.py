@@ -10,12 +10,14 @@ nbp_api = NbpApi()
 @app.route('/')
 def index():
 
+    #get the list of currencies and their codes from NbpApi
     currency_list = nbp_api.get_currency_list()
     
     return render_template('index.html', currency_list = currency_list)
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
+    #get values from form
     curr_first = request.form.get('curr_first')
     percentage_first = request.form.get('percentage_first')
     
@@ -27,30 +29,17 @@ def analyze():
 
     start_date = request.form.get('start_date')
 
+    #build dict with currency code and its percentage share
     currency_dict = {
         'first': {'currency': curr_first, 'percentage': percentage_first},
         'second': {'currency': curr_second, 'percentage': percentage_second},
         'third': {'currency': curr_third, 'percentage': percentage_third},
     }
 
+    start_values = {curr_first: percentage_first, curr_second: percentage_second, curr_third: percentage_third}
     investment = Investment(currency_dict, start_date, nbp_api)
 
-    investment.draw_currency_rates()
-
-    last_total = investment.draw_investment_pln()
-    bilance = last_total - 1000.0
-    bilance = round(bilance, 2)
-
-    start_values = {curr_first: percentage_first, curr_second: percentage_second, curr_third: percentage_third}
-    investment.draw_start_pie(start_values)
-
-    investment.draw_end_pie()
-    highest_value, best_date = investment.when_to_leave()
-
-    best_bilance = round((highest_value - 1000), 2)
-
-    investment.plot_currency_allocation_over_time()
-    
+    last_total, highest_value, best_date, bilance, best_bilance = investment.analyze_investment(start_values)    
     
     return render_template('investmentResult.html', 
                            last_total = last_total, 
