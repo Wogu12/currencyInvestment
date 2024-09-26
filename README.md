@@ -3,7 +3,7 @@
 
 ![ISS_17050_05987-1](https://github.com/user-attachments/assets/922826b8-f6d6-49b2-973e-7dada62663bd)
 
-Aplikacja powstała w celu przeanalizowania za pomocą API Narodowego Banku Polskiego inwestycji w trzy waluty kwoty 1000zł na 30 dni. Analiza pokazuje jak zmieniała się wartość zainwestowanych pieniędzy w czasie, jak zmianiły się kursy walut oraz procentowy udział walut w ciągu inwestycji i po wypłacie (wymianie) pieniędzy.
+Aplikacja powstała w celu przeanalizowania za pomocą API Narodowego Banku Polskiego inwestycji w trzy waluty kwoty 1000zł na 30 dni. Analiza pokazuje jak zmieniała się wartość zainwestowanych pieniędzy w czasie, jak zmieniały się kursy walut oraz procentowy udział walut w ciągu inwestycji i po wypłacie (wymianie) pieniędzy.
 
 ## Technologie
 - [NBP API](https://api.nbp.pl/) - Pobieranie kursów walut
