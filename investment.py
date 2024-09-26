@@ -1,12 +1,13 @@
 import os
 from datetime import datetime, timedelta
 import matplotlib
-matplotlib.use('Agg') #not a windowed application, must set this to generate graphs
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
+matplotlib.use('Agg') #not a windowed application, must set this to generate graphs
+
 class Investment():
-    def __init__(self, currency_dict, start_date, nbp_api):
+    def __init__(self, currency_dict: dict[str, dict[str, str]], start_date: str, nbp_api):
         self.start_date = start_date
         self.nbp_api = nbp_api
         self.start_money = 1000
@@ -20,7 +21,7 @@ class Investment():
         self.value_for_third = []
         self.total_value = []
 
-    def _get_currency_rates(self):
+    def _get_currency_rates(self) -> tuple[list[dict[str, float]], list[dict[str, float]], list[dict[str, float]]]:
         """
         Get rates for each currency from NbpApi
         """
@@ -35,7 +36,7 @@ class Investment():
 
         return first_currency, second_currency, third_currency
     
-    def _get_currency_percentage(self):
+    def _get_currency_percentage(self) -> tuple[float, float, float]:
         """
         Get percentage share for each currency
         """
@@ -47,7 +48,7 @@ class Investment():
 
         return first_percent, second_percent, third_percent
     
-    def _get_dates_and_mid(self):
+    def _get_dates_and_mid(self) -> tuple[list[datetime], list[float], list[float], list[float]]:
         """
         Get dates and values for each currency
         """
@@ -66,7 +67,7 @@ class Investment():
 
         return dates, first_rate_value, second_rate_value, third_rate_value
     
-    def when_to_leave(self):
+    def when_to_leave(self) -> tuple[float, str]:
         """
         Calculate when user should leave investment to get the best outcome
         """
@@ -81,13 +82,13 @@ class Investment():
                 best_date = date
 
         highest_value = round(highest_value, 2) #round highest value
-        best_date = best_date.strftime('%Y-%m-%d') #asure good format of date
+        best_date = best_date.strftime('%Y-%m-%d') #assure good format of date
 
         return highest_value, best_date
 
-    def analyze_investment(self, start_values):
+    def analyze_investment(self, start_values: dict[str, float]) -> tuple[float, float, str, float, float]:
         """
-        Pack all needed function to carry aou analysis into one function
+        Pack all needed function to carry out analysis into one function
         """
         self.draw_currency_rates()
 
@@ -106,7 +107,7 @@ class Investment():
 
         return last_total, highest_value, best_date, bilance, best_bilance
 
-    def draw_start_pie(self, start_values):
+    def draw_start_pie(self, start_values: dict[str, float]) -> None:
         """
         Draw pie chart for percentage share of currencies in the investment at the beginning
         """
@@ -115,7 +116,7 @@ class Investment():
         
         self._configure_pie_chart('Procentowy podział walut na początku inwestycji', values, currencies, 'pie_chart_start.png')
 
-    def draw_end_pie(self):
+    def draw_end_pie(self) -> None:
         """
         Draw pie chart for percentage share of currencies in the investment at the end
         """
@@ -135,9 +136,9 @@ class Investment():
 
         self._configure_pie_chart('Procentowy podział walut na koniec inwestycji', values, currencies, 'pie_chart_end.png')
 
-    def draw_investment_pln(self):
+    def draw_investment_pln(self) -> float:
         """
-        Draw line chart to show how investment proceed in PLN
+        Draw line chart to show how investment proceeds in PLN
         """
         first_percent, second_percent, third_percent = self._get_currency_percentage()
 
@@ -179,9 +180,9 @@ class Investment():
         last_total = round(last_total, 2)
         return last_total
     
-    def draw_currency_rates(self):
+    def draw_currency_rates(self) -> None:
         """
-        Draw line chart to show how much did each of currency cost for each day
+        Draw line chart to show how much did each currency cost for each day
         """
         dates, first_rate_value, second_rate_value, third_rate_value = self._get_dates_and_mid()
 
@@ -191,7 +192,7 @@ class Investment():
 
         self._configure_graph('Cena za wybrane waluty w ciągu inwestycji (30 dni)', 'Cena waluty', dates, 'currency_rates.png')    
             
-    def _configure_graph(self, title, ylabel, dates, file_name):
+    def _configure_graph(self, title: str, ylabel: str, dates: list[datetime], file_name: str) -> None:
         """
         Modularize repeatable elements of code for drawing line charts
         """
@@ -201,7 +202,7 @@ class Investment():
         plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
         plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=1)) #set grid to show everyday
         plt.xticks(rotation=90)
-        plt.xlim(dates[0], dates[-1]) #ensure that first dot start on Y axis
+        plt.xlim(dates[0], dates[-1]) #ensure that first dot starts on Y axis
         plt.legend()
         plt.grid(True)
         plt.tight_layout()
@@ -212,7 +213,7 @@ class Investment():
         plt.savefig(os.path.join(self.graph_directory, file_name), bbox_inches='tight')
         plt.close()
 
-    def _configure_pie_chart(self, title, values, currencies, file_name):
+    def _configure_pie_chart(self, title: str, values: list[float], currencies: list[str], file_name: str) -> None:
         """
         Modularize repeatable elements of code for drawing pie charts
         """
@@ -226,7 +227,7 @@ class Investment():
         plt.savefig(os.path.join(self.graph_directory, file_name), bbox_inches='tight')
         plt.close()
 
-    def plot_currency_allocation_over_time(self):
+    def plot_currency_allocation_over_time(self) -> None:
         """
         Draw line chart for how percentage share of currencies changed over dates
         """

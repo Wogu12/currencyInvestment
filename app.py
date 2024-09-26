@@ -1,14 +1,14 @@
 from flask import Flask, render_template, request
+
 from nbp_api import NbpApi
 from investment import Investment
 
 app = Flask(__name__)
-app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 nbp_api = NbpApi()
 
 @app.route('/')
-def index():
+def index() -> str:
 
     #get the list of currencies and their codes from NbpApi
     currency_list = nbp_api.get_currency_list()
@@ -16,7 +16,7 @@ def index():
     return render_template('index.html', currency_list = currency_list)
 
 @app.route('/analyze', methods=['POST'])
-def analyze():
+def analyze() -> str:
     #get values from form
     curr_first = request.form.get('curr_first')
     percentage_first = request.form.get('percentage_first')
@@ -55,4 +55,4 @@ def analyze():
                            percentage_third = percentage_third)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
